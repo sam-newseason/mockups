@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>insa — owner dashboard v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --teal: #0D9488;
+  --teal-bright: #2DD4BF;
+  --teal-glow: rgba(45,212,191,0.12);
+  --dark: #060C0A;
+  --dark-card: #0A1410;
+  --dark-border: #112018;
+  --white: #F0FDF9;
+  --slate: #6A9690;
+  --amber: #F59E0B;
+  --amber-bg: rgba(245,158,11,0.08);
+  --red: #F87171;
+  --red-bg: rgba(248,113,113,0.08);
+  --green: #34D399;
+  --green-bg: rgba(52,211,153,0.08);
+  --purple: #A78BFA;
+  --purple-bg: rgba(167,139,250,0.08);
+  --blue: #60A5FA;
+}
+
+body {
+  background: #040907;
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 20px;
+  color: var(--white);
+  gap: 16px;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse at 25% 15%, rgba(13,148,136,0.04) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+.page-lbl {
+  font-size: 9px; letter-spacing: 0.2em;
+  color: var(--teal-bright); text-transform: uppercase;
+  font-family: 'DM Mono', monospace; align-self: flex-start;
+}
+
+/* ── SHELL ── */
+.shell {
+  width: 100%; max-width: 1160px;
+  background: var(--dark);
+  border-radius: 14px;
+  border: 1px solid #0D1A14;
+  overflow: hidden;
+  display: flex;
+  box-shadow:
+    0 0 0 1px rgba(45,212,191,0.04),
+    0 0 40px rgba(13,148,136,0.05),
+    0 40px 80px rgba(0,0,0,0.5);
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 196px; flex-shrink: 0;
+  background: var(--dark-card);
+  border-right: 1px solid var(--dark-border);
+  display: flex; flex-direction: column;
+  padding: 18px 0;
+}
+
+.s-logo {
+  font-family: 'Instrument Serif', serif;
+  font-size: 20px; color: var(--teal-bright);
+  padding: 0 16px 16px;
+  border-bottom: 1px solid var(--dark-border);
+  margin-bottom: 10px;
+}
+
+.s-rest {
+  padding: 0 16px 14px;
+  border-bottom: 1px solid var(--dark-border);
+  margin-bottom: 10px;
+}
+.s-rest-name { font-size: 11px; font-weight: 700; color: var(--white); margin-bottom: 2px; }
+.s-rest-sub { font-size: 9px; color: var(--slate); font-family: 'DM Mono', monospace; }
+
+.s-nav { display: flex; flex-direction: column; gap: 1px; padding: 0 8px; }
+.s-item {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 9px; border-radius: 7px;
+  font-size: 11px; color: #1A2E28; cursor: pointer;
+}
+.s-item.active { background: rgba(45,212,191,0.08); color: var(--teal-bright); }
+.s-icon { font-size: 12px; }
+
+/* competitor banner in sidebar */
+.s-compare {
+  margin: auto 10px 0;
+  padding: 10px 11px;
+  background: rgba(45,212,191,0.04);
+  border: 1px solid rgba(45,212,191,0.1);
+  border-radius: 8px;
+}
+.s-compare-title {
+  font-size: 8px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--teal-bright);
+  font-family: 'DM Mono', monospace; font-weight: 700;
+  margin-bottom: 6px;
+}
+.s-compare-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 4px;
+}
+.s-compare-label { font-size: 10px; color: var(--slate); font-family: 'DM Mono', monospace; }
+.s-compare-badge {
+  font-size: 8px; font-family: 'DM Mono', monospace;
+  padding: 2px 6px; border-radius: 20px;
+}
+.s-compare-badge.win { background: var(--green-bg); color: var(--green); }
+.s-compare-badge.only { background: var(--teal-glow); color: var(--teal-bright); }
+
+/* ── MAIN ── */
+.main {
+  flex: 1; overflow-y: auto;
+  padding: 18px 20px;
+  scrollbar-width: none;
+  display: flex; flex-direction: column; gap: 13px;
+}
+.main::-webkit-scrollbar { display: none; }
+
+/* ── TOP BAR ── */
+.topbar {
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.tb-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 20px; color: var(--white);
+}
+.tb-sub { font-size: 9px; color: var(--slate); font-family: 'DM Mono', monospace; margin-top: 2px; }
+.tb-date {
+  font-size: 9px; color: var(--slate); font-family: 'DM Mono', monospace;
+  background: var(--dark-card); padding: 4px 9px;
+  border-radius: 6px; border: 1px solid var(--dark-border);
+}
+
+/* ── KPI ROW ── */
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
+.kpi {
+  background: var(--dark-card);
+  border: 1px solid var(--dark-border);
+  border-radius: 9px; padding: 12px 14px;
+  position: relative; overflow: hidden;
+}
+.kpi::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+}
+.kpi.k-teal::before { background: linear-gradient(90deg, var(--teal), var(--teal-bright)); }
+.kpi.k-green::before { background: linear-gradient(90deg, #059669, var(--green)); }
+.kpi.k-amber::before { background: linear-gradient(90deg, #92400E, var(--amber)); }
+.kpi.k-purple::before { background: linear-gradient(90deg, #5B21B6, var(--purple)); }
+
+.kpi-lbl { font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate); font-family: 'DM Mono', monospace; margin-bottom: 5px; }
+.kpi-val { font-family: 'Instrument Serif', serif; font-size: 24px; color: var(--white); line-height: 1; margin-bottom: 3px; }
+.kpi-delta { font-size: 9px; font-family: 'DM Mono', monospace; }
+.kpi-delta.up { color: var(--green); }
+.kpi-delta.dn { color: var(--red); }
+
+/* context pill */
+.kpi-context {
+  margin-top: 5px; font-size: 9px;
+  font-family: 'DM Mono', monospace; color: #1A3028;
+  font-style: italic;
+}
+
+/* ── ARRIVING BANNER ── */
+.arriving {
+  background: linear-gradient(135deg, rgba(13,148,136,0.18), rgba(45,212,191,0.04));
+  border: 1px solid rgba(45,212,191,0.18);
+  border-radius: 11px; padding: 12px 14px;
+  display: flex; align-items: flex-start; gap: 12px;
+  position: relative; overflow: hidden;
+}
+.arriving::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(45,212,191,0.5), transparent);
+}
+
+.arr-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--teal-glow); border: 1px solid rgba(45,212,191,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: var(--teal-bright);
+  flex-shrink: 0;
+}
+
+.arr-info { flex: 1; }
+.arr-alert-lbl {
+  font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--teal-bright); font-family: 'DM Mono', monospace;
+  font-weight: 700; margin-bottom: 2px;
+}
+.arr-name { font-size: 14px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+.arr-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 5px; }
+.arr-tag {
+  background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.5);
+  font-size: 9px; padding: 2px 6px; border-radius: 20px;
+  font-family: 'DM Mono', monospace;
+}
+.arr-tip {
+  font-size: 10px; color: rgba(240,253,249,0.5);
+  font-family: 'DM Mono', monospace; font-style: italic; line-height: 1.4;
+}
+
+/* insa exclusive tag */
+.excl-tag {
+  flex-shrink: 0; align-self: center;
+  background: var(--teal-glow); color: var(--teal-bright);
+  font-size: 8px; font-family: 'DM Mono', monospace;
+  padding: 3px 8px; border-radius: 20px; font-weight: 700;
+  border: 1px solid rgba(45,212,191,0.2);
+  white-space: nowrap;
+}
+
+/* ── SECTION HEADER ── */
+.sec-hdr {
+  display: flex; align-items: center; gap: 10px;
+}
+.sec-title {
+  font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--slate); font-family: 'DM Mono', monospace; font-weight: 700;
+}
+.sec-divider { flex: 1; height: 1px; background: var(--dark-border); }
+.sec-sub { font-size: 9px; color: #1A2E28; font-family: 'DM Mono', monospace; }
+
+/* ── OPPORTUNITY CARDS ── */
+.opps { display: flex; flex-direction: column; gap: 9px; }
+
+.opp {
+  background: var(--dark-card);
+  border: 1px solid var(--dark-border);
+  border-radius: 11px; overflow: hidden;
+  position: relative;
+}
+
+.opp-stripe {
+  position: absolute; top: 0; left: 0;
+  width: 3px; height: 100%;
+}
+
+/* top row */
+.opp-top {
+  padding: 12px 14px 10px 18px;
+  display: flex; align-items: flex-start; gap: 14px;
+}
+
+.opp-left { flex: 1; }
+
+.opp-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 8px; font-family: 'DM Mono', monospace;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 20px; font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.opp-finding {
+  font-family: 'Instrument Serif', serif;
+  font-size: 15px; color: var(--white);
+  line-height: 1.3; margin-bottom: 4px;
+}
+
+.opp-evidence {
+  font-size: 10px; color: var(--slate);
+  font-family: 'DM Mono', monospace; line-height: 1.5;
+}
+
+/* what toast/yelp can't see */
+.blind-spot {
+  font-size: 9px; font-family: 'DM Mono', monospace;
+  color: #1A2E28; margin-top: 4px; font-style: italic;
+}
+
+.opp-right {
+  flex-shrink: 0; min-width: 140px; text-align: right;
+}
+.proj-lbl {
+  font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--slate); font-family: 'DM Mono', monospace; margin-bottom: 3px;
+}
+.proj-val {
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px; color: var(--white); line-height: 1;
+}
+.proj-sub {
+  font-size: 9px; color: var(--slate);
+  font-family: 'DM Mono', monospace; line-height: 1.4; margin-top: 2px;
+}
+
+/* divider */
+.opp-div { height: 1px; background: var(--dark-border); margin: 0 14px 0 18px; }
+
+/* dial row */
+.dial-row {
+  padding: 10px 14px 10px 18px;
+  display: flex; align-items: center; gap: 14px;
+}
+
+.dial-lbl-group { flex-shrink: 0; min-width: 110px; }
+.dial-action { font-size: 11px; font-weight: 700; color: var(--white); margin-bottom: 2px; }
+.dial-action-sub { font-size: 9px; color: var(--slate); font-family: 'DM Mono', monospace; }
+
+.dial-wrap { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+
+input[type=range] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 3px; border-radius: 2px;
+  outline: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--white);
+  border: 2px solid var(--teal-bright);
+  box-shadow: 0 0 6px rgba(45,212,191,0.5);
+  cursor: pointer;
+}
+
+.dial-ticks {
+  display: flex; justify-content: space-between;
+  font-size: 8px; color: var(--slate); font-family: 'DM Mono', monospace;
+}
+
+.proj-badge { flex-shrink: 0; text-align: right; min-width: 100px; }
+.proj-badge-val { font-family: 'Instrument Serif', serif; font-size: 17px; color: var(--green); line-height: 1; }
+.proj-badge-lbl { font-size: 8px; color: var(--slate); font-family: 'DM Mono', monospace; margin-top: 2px; }
+
+/* confidence */
+.conf-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 14px 10px 18px;
+}
+.conf-lbl { font-size: 8px; color: var(--slate); font-family: 'DM Mono', monospace; flex-shrink: 0; }
+.conf-track { flex: 1; height: 2px; background: rgba(255,255,255,0.05); border-radius: 1px; overflow: hidden; }
+.conf-fill { height: 100%; border-radius: 1px; }
+.conf-val { font-size: 8px; font-family: 'DM Mono', monospace; flex-shrink: 0; }
+
+/* action buttons */
+.opp-actions { display: flex; gap: 6px; padding: 0 14px 12px 18px; }
+.btn {
+  font-size: 10px; font-weight: 700;
+  padding: 6px 12px; border-radius: 7px;
+  border: none; cursor: pointer;
+  font-family: 'Syne', sans-serif; letter-spacing: 0.02em;
+}
+.btn-primary { background: var(--teal); color: var(--white); }
+.btn-auto { background: var(--purple-bg); color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
+.btn-ghost { background: rgba(255,255,255,0.03); color: var(--slate); border: 1px solid var(--dark-border); }
+
+/* ── BOTTOM GRID ── */
+.bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* win-back results */
+.wb-card {
+  background: var(--dark-card); border: 1px solid var(--dark-border);
+  border-radius: 10px; overflow: hidden;
+}
+.wb-hdr {
+  padding: 10px 14px; border-bottom: 1px solid var(--dark-border);
+  display: flex; align-items: center; gap: 7px;
+}
+.wb-hdr-title {
+  font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--slate); font-family: 'DM Mono', monospace; font-weight: 700;
+}
+.wb-auto { background: var(--purple-bg); color: var(--purple); font-size: 8px; font-family: 'DM Mono', monospace; padding: 2px 7px; border-radius: 20px; }
+.wb-excl { background: var(--teal-glow); color: var(--teal-bright); font-size: 8px; font-family: 'DM Mono', monospace; padding: 2px 7px; border-radius: 20px; border: 1px solid rgba(45,212,191,0.15); }
+.wb-total { margin-left: auto; font-family: 'Instrument Serif', serif; font-size: 15px; color: var(--green); }
+.wb-total-lbl { font-size: 8px; color: var(--slate); font-family: 'DM Mono', monospace; margin-left: 3px; }
+
+.wb-table { width: 100%; border-collapse: collapse; }
+.wb-table th { padding: 7px 12px; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate); font-family: 'DM Mono', monospace; text-align: left; border-bottom: 1px solid var(--dark-border); background: rgba(255,255,255,0.01); }
+.wb-table td { padding: 8px 12px; font-size: 10px; border-bottom: 1px solid rgba(17,32,24,0.4); font-family: 'DM Mono', monospace; color: var(--slate); }
+.wb-table tr:last-child td { border-bottom: none; }
+.wb-table td:first-child { font-weight: 600; color: var(--white); font-family: 'Syne', sans-serif; font-size: 11px; }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 8px; padding: 2px 7px; border-radius: 20px;
+  font-family: 'DM Mono', monospace;
+}
+.pill.ret { background: var(--green-bg); color: var(--green); }
+.pill.sent { background: var(--purple-bg); color: var(--purple); }
+.pill.open { background: var(--amber-bg); color: var(--amber); }
+
+.wb-val { color: var(--green); font-weight: 600; }
+
+/* dish intel */
+.dish-card {
+  background: var(--dark-card); border: 1px solid var(--dark-border);
+  border-radius: 10px; overflow: hidden;
+}
+.dish-hdr {
+  padding: 10px 14px; border-bottom: 1px solid var(--dark-border);
+  display: flex; align-items: center; gap: 7px;
+}
+.dish-hdr-title {
+  font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--slate); font-family: 'DM Mono', monospace; font-weight: 700;
+}
+.dish-hdr-sub { font-size: 9px; color: #1A2E28; font-family: 'DM Mono', monospace; margin-left: auto; font-style: italic; }
+
+.dish-items { padding: 6px; display: flex; flex-direction: column; gap: 3px; }
+.dish-item {
+  padding: 8px 10px; border-radius: 7px;
+  background: rgba(255,255,255,0.02);
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.d-sig { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.d-sig.up { background: var(--green); box-shadow: 0 0 5px var(--green); }
+.d-sig.dn { background: var(--red); box-shadow: 0 0 5px var(--red); }
+.d-sig.warn { background: var(--amber); box-shadow: 0 0 5px var(--amber); }
+
+.d-name { font-size: 11px; font-weight: 600; color: var(--white); flex: 1; }
+.d-note { font-size: 9px; color: var(--slate); font-family: 'DM Mono', monospace; line-height: 1.3; }
+.d-voice-note { font-size: 9px; color: var(--teal-bright); font-family: 'DM Mono', monospace; margin-top: 2px; font-style: italic; }
+.d-signal { font-size: 9px; color: var(--slate); font-family: 'DM Mono', monospace; flex-shrink: 0; text-align: right; }
+
+/* ── WHAT TOAST CAN'T SEE BANNER ── */
+.blind-banner {
+  background: rgba(255,255,255,0.01);
+  border: 1px solid var(--dark-border);
+  border-radius: 9px; padding: 11px 14px;
+  display: flex; align-items: center; gap: 12px;
+}
+.blind-icon { font-size: 18px; flex-shrink: 0; }
+.blind-title { font-size: 10px; font-weight: 700; color: var(--slate); margin-bottom: 2px; }
+.blind-body { font-size: 9px; color: #1A2E28; font-family: 'DM Mono', monospace; line-height: 1.5; }
+.blind-items { display: flex; gap: 8px; flex-wrap: wrap; }
+.blind-item {
+  font-size: 9px; font-family: 'DM Mono', monospace;
+  color: var(--teal-bright); background: var(--teal-glow);
+  padding: 2px 8px; border-radius: 20px;
+  border: 1px solid rgba(45,212,191,0.12);
+}
+</style>
+</head>
+<body>
+
+<div class="page-lbl">insa · owner dashboard · decisions this week</div>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="s-logo">insa</div>
+    <div class="s-rest">
+      <div class="s-rest-name">Avor Thai</div>
+      <div class="s-rest-sub">silver lake · 247 insiders</div>
+    </div>
+    <div class="s-nav">
+      <div class="s-item active"><span class="s-icon">⚡</span> decisions</div>
+      <div class="s-item"><span class="s-icon">◈</span> customers</div>
+      <div class="s-item"><span class="s-icon">🍽</span> dishes</div>
+      <div class="s-item"><span class="s-icon">🎙</span> sessions</div>
+      <div class="s-item"><span class="s-icon">📈</span> results</div>
+      <div class="s-item"><span class="s-icon">⚙</span> settings</div>
+    </div>
+
+    <!-- mini benchmark widget -->
+    <div class="s-compare">
+      <div class="s-compare-title">vs. other tools</div>
+      <div class="s-compare-row">
+        <div class="s-compare-label">silent churn</div>
+        <div class="s-compare-badge only">only insa</div>
+      </div>
+      <div class="s-compare-row">
+        <div class="s-compare-label">why they left</div>
+        <div class="s-compare-badge only">only insa</div>
+      </div>
+      <div class="s-compare-row">
+        <div class="s-compare-label">check-in alert</div>
+        <div class="s-compare-badge only">only insa</div>
+      </div>
+      <div class="s-compare-row">
+        <div class="s-compare-label">projected ROI</div>
+        <div class="s-compare-badge only">only insa</div>
+      </div>
+      <div class="s-compare-row">
+        <div class="s-compare-label">close the loop</div>
+        <div class="s-compare-badge only">only insa</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div>
+        <div class="tb-title">Decisions this week</div>
+        <div class="tb-sub">3 opportunities · 23 voice sessions · 247 insiders · 4 at risk</div>
+      </div>
+      <div class="tb-date">wed apr 22 · week 16</div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpis">
+      <div class="kpi k-teal">
+        <div class="kpi-lbl">monthly revenue</div>
+        <div class="kpi-val">$18,400</div>
+        <div class="kpi-delta up">↑ +$1,200 vs last month</div>
+        <div class="kpi-context">toast sees this. insa explains why.</div>
+      </div>
+      <div class="kpi k-green">
+        <div class="kpi-lbl">win-back recovered</div>
+        <div class="kpi-val">$2,100</div>
+        <div class="kpi-delta up">↑ 3 regulars returned</div>
+        <div class="kpi-context">toast can't see this. yelp can't either.</div>
+      </div>
+      <div class="kpi k-amber">
+        <div class="kpi-lbl">at-risk regulars</div>
+        <div class="kpi-val">4</div>
+        <div class="kpi-delta dn">↑ 2 new this week</div>
+        <div class="kpi-context">caught before they leave. before yelp.</div>
+      </div>
+      <div class="kpi k-purple">
+        <div class="kpi-lbl">insider retention</div>
+        <div class="kpi-val">73%</div>
+        <div class="kpi-delta up">↑ +8pts vs 30 days ago</div>
+        <div class="kpi-context">industry avg: 55%. insa users: 73%.</div>
+      </div>
+    </div>
+
+    <!-- ARRIVING BANNER -->
+    <div class="arriving">
+      <div class="arr-avatar">J</div>
+      <div class="arr-info">
+        <div class="arr-alert-lbl">just arrived · 2 min ago</div>
+        <div class="arr-name">James Chen</div>
+        <div class="arr-tags">
+          <span class="arr-tag">2yr regular</span>
+          <span class="arr-tag">14 visits</span>
+          <span class="arr-tag">texture-forward</span>
+          <span class="arr-tag">umami 88%</span>
+          <span class="arr-tag">🎂 birthday month</span>
+        </div>
+        <div class="arr-tip">"loves crispy basil. last visit he said portions felt generous again. bring it up — he'll notice."</div>
+      </div>
+      <div class="excl-tag">only insa ✦</div>
+    </div>
+
+    <!-- BLIND SPOT BANNER -->
+    <div class="blind-banner">
+      <div class="blind-icon">👁</div>
+      <div>
+        <div class="blind-title">What Toast and Yelp can't see this week</div>
+        <div class="blind-items" style="margin-top:5px">
+          <span class="blind-item">why 4 regulars went quiet</span>
+          <span class="blind-item">tom kha broth complaint (8 mentions, 0 public)</span>
+          <span class="blind-item">james's taste profile</span>
+          <span class="blind-item">who's about to churn</span>
+          <span class="blind-item">which dish to promote to whom</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPPORTUNITIES -->
+    <div class="sec-hdr">
+      <div class="sec-title">opportunities · act now</div>
+      <div class="sec-divider"></div>
+      <div class="sec-sub">insa found these. toast and yelp can't.</div>
+    </div>
+
+    <div class="opps">
+
+      <!-- OPP 1 -->
+      <div class="opp">
+        <div class="opp-stripe" style="background:var(--amber)"></div>
+        <div class="opp-top">
+          <div class="opp-left">
+            <div class="opp-tag" style="background:var(--amber-bg);color:var(--amber)">🍜 dish quality · voice signal</div>
+            <div class="opp-finding">Tom kha broth is too salty — 8 loyal customers said so privately</div>
+            <div class="opp-evidence">"broth was overpowering" · "too salty for me" · "would be perfect if lighter" — 8 independent sessions this week, unprompted, all from regulars with 3+ visits.</div>
+            <div class="blind-spot">↳ toast sees: tom kha sold 47 units. yelp sees: 0 public reviews. you'd never know without insa.</div>
+          </div>
+          <div class="opp-right">
+            <div class="proj-lbl">if you fix it</div>
+            <div class="proj-val">+$840</div>
+            <div class="proj-sub">projected monthly<br>from retained customers</div>
+          </div>
+        </div>
+        <div class="opp-div"></div>
+        <div class="dial-row">
+          <div class="dial-lbl-group">
+            <div class="dial-action">Seasoning adjustment</div>
+            <div class="dial-action-sub">how much to reduce salt</div>
+          </div>
+          <div class="dial-wrap">
+            <input type="range" min="0" max="100" value="40" id="d1"
+              style="background:linear-gradient(90deg,#92400E 0%,var(--amber) 40%,rgba(255,255,255,0.06) 40%)"
+              oninput="upDial(this,'p1',840,0.8)">
+            <div class="dial-ticks"><span>none</span><span>slight</span><span>moderate</span><span>significant</span></div>
+          </div>
+          <div class="proj-badge">
+            <div class="proj-badge-val" id="p1">+$336</div>
+            <div class="proj-badge-lbl">projected impact</div>
+          </div>
+        </div>
+        <div class="conf-row">
+          <div class="conf-lbl">signal confidence</div>
+          <div class="conf-track"><div class="conf-fill" style="width:88%;background:var(--amber)"></div></div>
+          <div class="conf-val" style="color:var(--amber)">high · 8 unprompted mentions</div>
+        </div>
+        <div class="opp-actions">
+          <button class="btn btn-primary">mark as fixed</button>
+          <button class="btn btn-auto">notify customers automatically ✦</button>
+          <button class="btn btn-ghost">dismiss</button>
+        </div>
+      </div>
+
+      <!-- OPP 2 -->
+      <div class="opp">
+        <div class="opp-stripe" style="background:var(--purple)"></div>
+        <div class="opp-top">
+          <div class="opp-left">
+            <div class="opp-tag" style="background:var(--purple-bg);color:var(--purple)">👥 retention · silent churn</div>
+            <div class="opp-finding">4 regulars gone quiet — all recoverable, all with positive last sessions</div>
+            <div class="opp-evidence">Last sessions showed positive sentiment. No strong churn signals detected. Historical win-back rate for this profile: 64%. Avg recovery value: $280/customer.</div>
+            <div class="blind-spot">↳ toast sees: 4 fewer orders. yelp sees: nothing. only insa knows they're recoverable.</div>
+          </div>
+          <div class="opp-right">
+            <div class="proj-lbl">if you reach out</div>
+            <div class="proj-val">+$1,120</div>
+            <div class="proj-sub">next 30 days<br>at 64% return rate</div>
+          </div>
+        </div>
+        <div class="opp-div"></div>
+        <div class="dial-row">
+          <div class="dial-lbl-group">
+            <div class="dial-action">Win-back offer</div>
+            <div class="dial-action-sub">discount to include</div>
+          </div>
+          <div class="dial-wrap">
+            <input type="range" min="0" max="100" value="55" id="d2"
+              style="background:linear-gradient(90deg,#5B21B6 0%,var(--purple) 55%,rgba(255,255,255,0.06) 55%)"
+              oninput="upOffer(this,'p2','o2',1120)">
+            <div class="dial-ticks"><span>no offer</span><span>10% off</span><span>free app</span><span>20% off</span></div>
+          </div>
+          <div class="proj-badge">
+            <div class="proj-badge-val" id="p2">+$717</div>
+            <div class="proj-badge-lbl">projected · <span id="o2">free app</span></div>
+          </div>
+        </div>
+        <div class="conf-row">
+          <div class="conf-lbl">signal confidence</div>
+          <div class="conf-track"><div class="conf-fill" style="width:64%;background:var(--purple)"></div></div>
+          <div class="conf-val" style="color:var(--purple)">medium · 64% historical rate</div>
+        </div>
+        <div class="opp-actions">
+          <button class="btn btn-auto">send automatically now ✦</button>
+          <button class="btn btn-ghost">preview messages first</button>
+        </div>
+      </div>
+
+      <!-- OPP 3 -->
+      <div class="opp">
+        <div class="opp-stripe" style="background:var(--teal-bright)"></div>
+        <div class="opp-top">
+          <div class="opp-left">
+            <div class="opp-tag" style="background:var(--teal-glow);color:var(--teal-bright)">⭐ rising dish · promote now</div>
+            <div class="opp-finding">Crispy basil chicken is your highest-signal dish this week</div>
+            <div class="opp-evidence">Mentioned positively in 14 of 23 sessions. Matches taste profiles of 68% of your insiders. No current promotion running. Highest upsell potential this week.</div>
+            <div class="blind-spot">↳ toast sees: 3rd in sales volume. misses that it's #1 in emotional signal — the dish people talk about.</div>
+          </div>
+          <div class="opp-right">
+            <div class="proj-lbl">if you promote</div>
+            <div class="proj-val">+$620</div>
+            <div class="proj-sub">this month<br>from increased orders</div>
+          </div>
+        </div>
+        <div class="opp-div"></div>
+        <div class="dial-row">
+          <div class="dial-lbl-group">
+            <div class="dial-action">Promotion intensity</div>
+            <div class="dial-action-sub">how hard to push it</div>
+          </div>
+          <div class="dial-wrap">
+            <input type="range" min="0" max="100" value="65" id="d3"
+              style="background:linear-gradient(90deg,var(--teal) 0%,var(--teal-bright) 65%,rgba(255,255,255,0.06) 65%)"
+              oninput="upDial(this,'p3',620,0.85)">
+            <div class="dial-ticks"><span>nothing</span><span>instagram</span><span>+ menu callout</span><span>+ insider msg</span></div>
+          </div>
+          <div class="proj-badge">
+            <div class="proj-badge-val" id="p3">+$361</div>
+            <div class="proj-badge-lbl">projected impact</div>
+          </div>
+        </div>
+        <div class="conf-row">
+          <div class="conf-lbl">signal confidence</div>
+          <div class="conf-track"><div class="conf-fill" style="width:78%;background:var(--teal-bright)"></div></div>
+          <div class="conf-val" style="color:var(--teal-bright)">high · 14 positive mentions</div>
+        </div>
+        <div class="opp-actions">
+          <button class="btn btn-primary">create instagram post</button>
+          <button class="btn btn-auto">message matching insiders ✦</button>
+          <button class="btn btn-ghost">dismiss</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BOTTOM GRID -->
+    <div class="sec-hdr">
+      <div class="sec-title">automated results</div>
+      <div class="sec-divider"></div>
+      <div class="sec-sub">insa handled these. you didn't have to.</div>
+    </div>
+
+    <div class="bottom-grid">
+
+      <!-- WIN-BACKS -->
+      <div class="wb-card">
+        <div class="wb-hdr">
+          <div class="wb-hdr-title">win-back results</div>
+          <div class="wb-auto">auto-sent ✦</div>
+          <div class="wb-excl">only insa</div>
+          <div class="wb-total">$2,100 <span class="wb-total-lbl">recovered</span></div>
+        </div>
+        <table class="wb-table">
+          <thead>
+            <tr>
+              <th>customer</th>
+              <th>flagged reason</th>
+              <th>offer sent</th>
+              <th>status</th>
+              <th>recovered</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Maria K.</td>
+              <td>broth · 6 wks</td>
+              <td>free appetizer</td>
+              <td><span class="pill ret">✓ returned sat</span></td>
+              <td class="wb-val">+$84</td>
+            </tr>
+            <tr>
+              <td>James C.</td>
+              <td>no flag · 5 wks</td>
+              <td>10% off</td>
+              <td><span class="pill ret">✓ returned fri</span></td>
+              <td class="wb-val">+$76</td>
+            </tr>
+            <tr>
+              <td>Sarah M.</td>
+              <td>portions · 8 wks</td>
+              <td>personal note</td>
+              <td><span class="pill open">opened · pending</span></td>
+              <td class="wb-val">—</td>
+            </tr>
+            <tr>
+              <td>David L.</td>
+              <td>no flag · 4 wks</td>
+              <td>free appetizer</td>
+              <td><span class="pill sent">sent ✦</span></td>
+              <td class="wb-val">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- DISH INTEL -->
+      <div class="dish-card">
+        <div class="dish-hdr">
+          <div class="dish-hdr-title">dish intelligence</div>
+          <div class="dish-hdr-sub">voice signal, not just sales volume</div>
+        </div>
+        <div class="dish-items">
+          <div class="dish-item">
+            <div class="d-sig up"></div>
+            <div style="flex:1">
+              <div class="d-name">Crispy Basil Chicken</div>
+              <div class="d-voice-note">"the char was perfect" · "my favorite thing here" — 14 mentions</div>
+            </div>
+            <div class="d-signal" style="color:var(--green)">↑ trending</div>
+          </div>
+          <div class="dish-item">
+            <div class="d-sig up"></div>
+            <div style="flex:1">
+              <div class="d-name">Pad See Ew</div>
+              <div class="d-voice-note">"the noodles have great chew" — consistent signal</div>
+            </div>
+            <div class="d-signal" style="color:var(--green)">↑ consistent</div>
+          </div>
+          <div class="dish-item">
+            <div class="d-sig warn"></div>
+            <div style="flex:1">
+              <div class="d-name">Tom Kha</div>
+              <div class="d-voice-note">"broth too salty" — 8 sessions, toast shows normal sales</div>
+            </div>
+            <div class="d-signal" style="color:var(--amber)">⚠ flagged</div>
+          </div>
+          <div class="dish-item">
+            <div class="d-sig dn"></div>
+            <div style="flex:1">
+              <div class="d-name">Green Curry</div>
+              <div class="d-voice-note">"spice overwhelms, sauce too thin" — 3 regulars stopped ordering</div>
+            </div>
+            <div class="d-signal" style="color:var(--red)">↓ declining</div>
+          </div>
+          <div class="dish-item">
+            <div class="d-sig up"></div>
+            <div style="flex:1">
+              <div class="d-name">Mango Sticky Rice</div>
+              <div class="d-voice-note">"didn't expect to love it this much" — emerging signal</div>
+            </div>
+            <div class="d-signal" style="color:var(--green)">↑ rising</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- main -->
+</div><!-- shell -->
+
+<script>
+function upDial(el, projId, max, curve) {
+  const pct = el.value / 100;
+  document.getElementById(projId).textContent = '+$' + Math.round(max * Math.pow(pct, curve)).toLocaleString();
+  const v = el.value + '%';
+  const c1 = el.id === 'd1' ? '#92400E' : el.id === 'd3' ? 'var(--teal)' : '#5B21B6';
+  const c2 = el.id === 'd1' ? 'var(--amber)' : el.id === 'd3' ? 'var(--teal-bright)' : 'var(--purple)';
+  el.style.background = `linear-gradient(90deg,${c1} 0%,${c2} ${v},rgba(255,255,255,0.06) ${v})`;
+}
+
+function upOffer(el, projId, offerId, max) {
+  const v = parseInt(el.value);
+  const labels = ['no offer','no offer','10% off','10% off','free app','free app','20% off'];
+  const mults  = [0, 0.1, 0.45, 0.55, 0.7, 0.78, 0.9];
+  const idx = Math.min(Math.floor(v / 15), 6);
+  document.getElementById(offerId).textContent = labels[idx];
+  document.getElementById(projId).textContent = '+$' + Math.round(max * mults[idx]).toLocaleString();
+  const pct = el.value + '%';
+  el.style.background = `linear-gradient(90deg,#5B21B6 0%,var(--purple) ${pct},rgba(255,255,255,0.06) ${pct})`;
+}
+</script>
+
+</body>
+</html>

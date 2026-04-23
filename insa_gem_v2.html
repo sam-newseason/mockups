@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>insa — taste signal gem</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --teal: #0D9488;
+  --teal-bright: #2DD4BF;
+  --dark: #060C0A;
+  --dark-card: #0A1410;
+  --dark-border: #112018;
+  --white: #F0FDF9;
+  --slate: #6A9690;
+}
+body {
+  background: var(--dark);
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px;
+  gap: 40px;
+  color: var(--white);
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, rgba(13,148,136,0.07) 0%, transparent 65%);
+  pointer-events: none;
+}
+.page-title {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--teal-bright);
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+  text-align: center;
+}
+
+/* ── PHONE ── */
+.phone {
+  width: 375px;
+  background: #050A08;
+  border-radius: 46px;
+  border: 1.5px solid #0F1E18;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 6px #030705,
+    0 0 60px rgba(13,148,136,0.1),
+    0 60px 120px rgba(0,0,0,0.8);
+}
+
+.phone-inner { padding: 54px 0 0; }
+
+.p-status {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 26px 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.p-header {
+  padding: 4px 24px 12px;
+}
+.p-greeting {
+  font-size: 11px;
+  color: var(--teal-bright);
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.08em;
+  margin-bottom: 3px;
+}
+.p-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 26px;
+  color: var(--white);
+  line-height: 1.15;
+}
+
+/* ── GEM STAGE ── */
+.gem-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0 8px;
+  position: relative;
+}
+
+.gem-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(45,212,191,0.12) 0%, transparent 70%);
+  animation: breathe 3s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes breathe {
+  0%   { transform: translate(-50%,-50%) scale(0.88); opacity: 0.5; }
+  100% { transform: translate(-50%,-50%) scale(1.12); opacity: 1; }
+}
+
+.gem-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  border-radius: 50%;
+  border: 1px solid rgba(45,212,191,0.07);
+  animation: ring-out 5s ease-out infinite;
+  pointer-events: none;
+}
+.gem-ring:nth-of-type(2) { width: 180px; height: 180px; animation-delay: 0s; }
+.gem-ring:nth-of-type(3) { width: 220px; height: 220px; animation-delay: 1.7s; }
+.gem-ring:nth-of-type(4) { width: 260px; height: 260px; animation-delay: 3.4s; }
+
+@keyframes ring-out {
+  0%   { transform: translate(-50%,-50%) scale(0.85); opacity: 0.7; }
+  100% { transform: translate(-50%,-50%) scale(1.15); opacity: 0; }
+}
+
+/* ── SIGNAL LABEL ── */
+.signal-meta {
+  text-align: center;
+  margin-top: 4px;
+}
+.signal-type {
+  font-family: 'Instrument Serif', serif;
+  font-size: 17px;
+  color: var(--white);
+  margin-bottom: 2px;
+}
+.signal-sub {
+  font-size: 10px;
+  color: var(--slate);
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── DIM BARS ── */
+.dims {
+  padding: 12px 22px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.dim-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dim-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dim-name {
+  font-size: 9px;
+  font-family: 'DM Mono', monospace;
+  color: var(--slate);
+  width: 62px;
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
+}
+.dim-track {
+  flex: 1;
+  height: 2px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.dim-fill {
+  height: 100%;
+  border-radius: 1px;
+}
+.dim-val {
+  font-size: 9px;
+  font-family: 'DM Mono', monospace;
+  width: 24px;
+  text-align: right;
+}
+.dim-pending { color: #112018; }
+
+/* ── INSIGHT BOX ── */
+.insight-box {
+  margin: 14px 16px 0;
+  background: rgba(45,212,191,0.04);
+  border: 1px solid rgba(45,212,191,0.12);
+  border-radius: 14px;
+  padding: 12px 14px;
+  position: relative;
+  overflow: hidden;
+}
+.insight-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(45,212,191,0.5), transparent);
+}
+.insight-label {
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--teal-bright);
+  font-family: 'DM Mono', monospace;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.insight-text {
+  font-size: 12px;
+  color: rgba(240,253,249,0.7);
+  font-family: 'DM Mono', monospace;
+  line-height: 1.5;
+}
+
+/* ── QUESTION ── */
+.q-card {
+  margin: 12px 14px 0;
+  background: var(--dark-card);
+  border: 1px solid var(--dark-border);
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+}
+.q-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(45,212,191,0.25), transparent);
+}
+.q-num {
+  padding: 10px 14px 0;
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  color: var(--teal-bright);
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+  font-weight: 700;
+}
+.q-text {
+  padding: 6px 14px 10px;
+  font-family: 'Instrument Serif', serif;
+  font-size: 15px;
+  color: var(--white);
+  line-height: 1.3;
+}
+.q-opts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  padding: 0 14px 14px;
+}
+.q-opt {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 9px;
+  padding: 8px 9px;
+  font-size: 10px;
+  color: var(--slate);
+  font-family: 'DM Mono', monospace;
+  line-height: 1.3;
+  position: relative;
+}
+.q-opt.sel {
+  background: rgba(45,212,191,0.08);
+  border-color: rgba(45,212,191,0.3);
+  color: var(--teal-bright);
+}
+.q-opt.sel::after {
+  content: '✓';
+  position: absolute;
+  top: 5px; right: 7px;
+  font-size: 8px;
+  color: var(--teal-bright);
+}
+
+/* ── VOICE CARD ── */
+.voice-card {
+  margin: 10px 14px 0;
+  background: linear-gradient(135deg, rgba(13,148,136,0.2), rgba(45,212,191,0.06));
+  border: 1px solid rgba(45,212,191,0.18);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.voice-mic {
+  width: 38px; height: 38px;
+  background: var(--teal);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  animation: mic-pulse 2s ease-in-out infinite;
+}
+@keyframes mic-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(45,212,191,0.4); }
+  50%      { box-shadow: 0 0 0 8px rgba(45,212,191,0); }
+}
+.voice-main { font-size: 12px; font-weight: 700; color: var(--white); margin-bottom: 2px; }
+.voice-sub { font-size: 9px; color: rgba(240,253,249,0.5); font-family: 'DM Mono', monospace; }
+
+/* ── NAV ── */
+.p-nav {
+  background: rgba(5,10,8,0.97);
+  border-top: 1px solid var(--dark-border);
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0 24px;
+  margin-top: 14px;
+}
+.p-nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; opacity: 0.22; }
+.p-nav-item.active { opacity: 1; }
+.p-nav-icon { font-size: 17px; }
+.p-nav-lbl { font-size: 8px; color: var(--white); letter-spacing: 0.08em; }
+.p-nav-item.active .p-nav-lbl { color: var(--teal-bright); }
+</style>
+</head>
+<body>
+
+<div class="page-title">insa · consumer · taste signal onboarding</div>
+
+<div class="phone">
+  <div class="phone-inner">
+
+    <div class="p-status">
+      <span>9:41</span>
+      <span style="font-size:12px;opacity:0.5">●●● 🔋</span>
+    </div>
+
+    <div class="p-header">
+      <div class="p-greeting">building your signal</div>
+      <div class="p-title">your taste,<br>quantified.</div>
+    </div>
+
+    <!-- GEM -->
+    <div class="gem-stage">
+      <div class="gem-glow"></div>
+      <div class="gem-ring"></div>
+      <div class="gem-ring"></div>
+      <div class="gem-ring"></div>
+      <canvas id="gem" width="200" height="200" style="position:relative;z-index:2"></canvas>
+      <div class="signal-meta">
+        <div class="signal-type">texture-forward · umami seeker</div>
+        <div class="signal-sub">3 of 6 facets lit · speak to complete</div>
+      </div>
+    </div>
+
+    <!-- DIMS -->
+    <div class="dims">
+      <div class="dim-row">
+        <div class="dim-dot" style="background:#2DD4BF;box-shadow:0 0 5px #2DD4BF"></div>
+        <div class="dim-name">texture</div>
+        <div class="dim-track"><div class="dim-fill" style="width:88%;background:#2DD4BF"></div></div>
+        <div class="dim-val" style="color:#2DD4BF">88</div>
+      </div>
+      <div class="dim-row">
+        <div class="dim-dot" style="background:#34D399;box-shadow:0 0 5px #34D399"></div>
+        <div class="dim-name">umami</div>
+        <div class="dim-track"><div class="dim-fill" style="width:76%;background:#34D399"></div></div>
+        <div class="dim-val" style="color:#34D399">76</div>
+      </div>
+      <div class="dim-row">
+        <div class="dim-dot" style="background:#FCD34D;box-shadow:0 0 5px #FCD34D"></div>
+        <div class="dim-name">intensity</div>
+        <div class="dim-track"><div class="dim-fill" style="width:62%;background:#FCD34D"></div></div>
+        <div class="dim-val" style="color:#FCD34D">62</div>
+      </div>
+      <div class="dim-row">
+        <div class="dim-dot" style="background:rgba(167,139,250,0.15)"></div>
+        <div class="dim-name" style="opacity:0.25">adventure</div>
+        <div class="dim-track"><div class="dim-fill" style="width:0%"></div></div>
+        <div class="dim-val dim-pending">—</div>
+      </div>
+      <div class="dim-row">
+        <div class="dim-dot" style="background:rgba(248,113,113,0.15)"></div>
+        <div class="dim-name" style="opacity:0.25">weight</div>
+        <div class="dim-track"><div class="dim-fill" style="width:0%"></div></div>
+        <div class="dim-val dim-pending">—</div>
+      </div>
+      <div class="dim-row">
+        <div class="dim-dot" style="background:rgba(96,165,250,0.15)"></div>
+        <div class="dim-name" style="opacity:0.25">aroma</div>
+        <div class="dim-track"><div class="dim-fill" style="width:0%"></div></div>
+        <div class="dim-val dim-pending">—</div>
+      </div>
+    </div>
+
+    <!-- INSIGHT -->
+    <div class="insight-box">
+      <div class="insight-label">emerging signal</div>
+      <div class="insight-text">you mention mouthfeel unprompted. you're in the top 12% of texture-sensitive eaters. 3 facets left to unlock.</div>
+    </div>
+
+    <!-- QUESTION -->
+    <div class="q-card">
+      <div class="q-num">question 4 of 7</div>
+      <div class="q-text">pad see ew arrives. first thing you notice is —</div>
+      <div class="q-opts">
+        <div class="q-opt sel">char on the noodles 🔥</div>
+        <div class="q-opt">sweetness of the sauce</div>
+        <div class="q-opt">the chew and thickness</div>
+        <div class="q-opt">aroma off the plate</div>
+      </div>
+    </div>
+
+    <!-- VOICE -->
+    <div class="voice-card">
+      <div class="voice-mic">🎙</div>
+      <div>
+        <div class="voice-main">speak to unlock 3 facets</div>
+        <div class="voice-sub">60s · adventure · weight · aroma</div>
+      </div>
+    </div>
+
+    <div class="p-nav">
+      <div class="p-nav-item active"><div class="p-nav-icon">◈</div><div class="p-nav-lbl">signal</div></div>
+      <div class="p-nav-item"><div class="p-nav-icon">🔮</div><div class="p-nav-lbl">oracle</div></div>
+      <div class="p-nav-item"><div class="p-nav-icon">🗺</div><div class="p-nav-lbl">log</div></div>
+      <div class="p-nav-item"><div class="p-nav-icon">◯</div><div class="p-nav-lbl">you</div></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const PHI = (1 + Math.sqrt(5)) / 2;
+
+// Dodecahedron vertices (normalized to unit sphere)
+const rawVerts = [
+  [ 1, 1, 1], [ 1, 1,-1], [ 1,-1, 1], [ 1,-1,-1],
+  [-1, 1, 1], [-1, 1,-1], [-1,-1, 1], [-1,-1,-1],
+  [0, 1/PHI, PHI], [0, 1/PHI,-PHI], [0,-1/PHI, PHI], [0,-1/PHI,-PHI],
+  [1/PHI, PHI, 0], [1/PHI,-PHI, 0], [-1/PHI, PHI, 0], [-1/PHI,-PHI, 0],
+  [PHI, 0, 1/PHI], [PHI, 0,-1/PHI], [-PHI, 0, 1/PHI], [-PHI, 0,-1/PHI],
+];
+
+// Normalize
+const verts = rawVerts.map(v => {
+  const len = Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
+  return [v[0]/len, v[1]/len, v[2]/len];
+});
+
+// 12 pentagonal faces
+const faces = [
+  [0,8,10,2,16],  // 0
+  [0,16,17,1,12], // 1
+  [0,12,14,4,8],  // 2
+  [1,17,3,11,9],  // 3
+  [1,9,5,14,12],  // 4
+  [2,10,6,15,13], // 5
+  [2,13,3,17,16], // 6
+  [3,13,15,7,11], // 7
+  [4,14,5,19,18], // 8
+  [4,18,6,10,8],  // 9
+  [5,9,11,7,19],  // 10
+  [6,18,19,7,15], // 11
+];
+
+// Opposite face pairs (antipodal by face center dot product)
+// Precomputed: [[0,10],[1,11],[2,7],[3,9],[4,5],[6,8]]
+const oppositePairs = [[0,10],[1,11],[2,7],[3,9],[4,5],[6,8]];
+
+// 6 dimensions mapped to face pairs
+const DIMS = [
+  { name: 'texture',   color: '#2DD4BF', value: 0.88, faces: oppositePairs[0] },
+  { name: 'umami',     color: '#34D399', value: 0.76, faces: oppositePairs[1] },
+  { name: 'intensity', color: '#FCD34D', value: 0.62, faces: oppositePairs[2] },
+  { name: 'adventure', color: '#A78BFA', value: 0.00, faces: oppositePairs[3] },
+  { name: 'weight',    color: '#F87171', value: 0.00, faces: oppositePairs[4] },
+  { name: 'aroma',     color: '#60A5FA', value: 0.00, faces: oppositePairs[5] },
+];
+
+// Face color map
+const faceColor = new Array(12).fill(null);
+DIMS.forEach(dim => {
+  dim.faces.forEach(fi => {
+    faceColor[fi] = { color: dim.color, value: dim.value };
+  });
+});
+
+// 3D rotation helpers
+function rotX(v, a) {
+  const [x,y,z] = v;
+  return [x, y*Math.cos(a)-z*Math.sin(a), y*Math.sin(a)+z*Math.cos(a)];
+}
+function rotY(v, a) {
+  const [x,y,z] = v;
+  return [x*Math.cos(a)+z*Math.sin(a), y, -x*Math.sin(a)+z*Math.cos(a)];
+}
+
+// Project 3D → 2D
+function project(v, scale, cx, cy) {
+  const z = v[2];
+  const fov = 3.5;
+  const s = fov / (fov - z);
+  return [cx + v[0] * scale * s, cy - v[1] * scale * s, z];
+}
+
+// Face centroid z for depth sorting
+function faceZ(faceIdx, rotated) {
+  return rotated[faces[faceIdx][0]][2] +
+         rotated[faces[faceIdx][1]][2] +
+         rotated[faces[faceIdx][2]][2];
+}
+
+let angleY = 0, angleX = 0.35;
+
+function draw() {
+  const canvas = document.getElementById('gem');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W/2, cy = H/2;
+  const scale = W * 0.34;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Rotate all vertices
+  const rotated = verts.map(v => rotX(rotY(v, angleY), angleX));
+
+  // Sort faces back to front
+  const sortedFaces = [...Array(12).keys()].sort((a,b) => {
+    const za = faces[a].reduce((s,i) => s + rotated[i][2], 0);
+    const zb = faces[b].reduce((s,i) => s + rotated[i][2], 0);
+    return za - zb;
+  });
+
+  sortedFaces.forEach(fi => {
+    const fc = faceColor[fi];
+    const pts2d = faces[fi].map(vi => project(rotated[vi], scale, cx, cy));
+
+    // Face normal z (for lighting)
+    const nx = rotated[faces[fi][0]][2];
+
+    // Skip fully back-facing (optional — shows through for gem effect)
+    const centerZ = faces[fi].reduce((s,i) => s + rotated[i][2], 0) / 5;
+
+    ctx.beginPath();
+    ctx.moveTo(pts2d[0][0], pts2d[0][1]);
+    for (let i = 1; i < pts2d.length; i++) ctx.lineTo(pts2d[i][0], pts2d[i][1]);
+    ctx.closePath();
+
+    const v = fc ? fc.value : 0;
+    const brightness = 0.3 + 0.4 * ((centerZ + 1) / 2); // depth lighting
+
+    if (v > 0.02) {
+      // Active face — colored with value intensity
+      const alpha = 0.08 + v * 0.22;
+      const hex = fc.color;
+      ctx.fillStyle = hex + Math.round(alpha * 255).toString(16).padStart(2,'0');
+      ctx.fill();
+
+      // Glow edge
+      ctx.save();
+      ctx.shadowBlur = 8 + v * 12;
+      ctx.shadowColor = fc.color;
+      ctx.strokeStyle = fc.color + Math.round((0.3 + v * 0.5) * 255).toString(16).padStart(2,'0');
+      ctx.lineWidth = 0.8 + v * 0.8;
+      ctx.stroke();
+      ctx.restore();
+    } else {
+      // Inactive face — dark with faint border
+      ctx.fillStyle = 'rgba(255,255,255,0.01)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+  });
+
+  // Center glow
+  const cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, 30);
+  cg.addColorStop(0, 'rgba(45,212,191,0.25)');
+  cg.addColorStop(1, 'rgba(45,212,191,0)');
+  ctx.fillStyle = cg;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 30, 0, Math.PI*2);
+  ctx.fill();
+
+  angleY += 0.006;
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>

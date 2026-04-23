@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>insa — consumer home</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --teal: #0D9488;
+  --teal-bright: #2DD4BF;
+  --teal-dark: #0F766E;
+  --teal-light: #CCFBF1;
+  --dark: #060C0A;
+  --dark-card: #0D1714;
+  --dark-border: #142820;
+  --white: #F0FDF9;
+  --slate: #7A9E98;
+  --amber: #F59E0B;
+  --red: #F87171;
+  --green: #34D399;
+  --purple: #A78BFA;
+  --blue: #60A5FA;
+  --yellow: #FCD34D;
+}
+
+body {
+  background: #080F0D;
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px 60px;
+  gap: 48px;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse at 50% 25%, rgba(13,148,136,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.page-lbl {
+  font-size: 9px; letter-spacing: 0.22em;
+  color: var(--teal-bright); text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── PHONE SHELL ── */
+.phone {
+  width: 390px;
+  background: #050A08;
+  border-radius: 50px;
+  border: 1.5px solid #0F1E18;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 0 0 7px #030705,
+    0 0 70px rgba(13,148,136,0.1),
+    0 70px 120px rgba(0,0,0,0.8),
+    inset 0 1px 0 rgba(45,212,191,0.04);
+}
+
+.notch {
+  position: absolute; top: 14px; left: 50%;
+  transform: translateX(-50%);
+  width: 126px; height: 37px;
+  background: #030705; border-radius: 20px; z-index: 20;
+}
+
+.screen {
+  width: 100%; overflow-y: auto; overflow-x: hidden;
+  scrollbar-width: none; padding-top: 62px;
+  background: #050A08;
+}
+.screen::-webkit-scrollbar { display: none; }
+
+/* STATUS BAR */
+.status {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 28px; height: 44px;
+  position: sticky; top: 0;
+  background: #050A08; z-index: 10;
+}
+.s-time { font-size: 15px; font-weight: 700; color: var(--white); }
+.s-icons { font-size: 12px; color: var(--white); opacity: 0.7; }
+
+/* HEADER */
+.hdr {
+  padding: 6px 24px 8px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+}
+.hdr-left {}
+.hdr-greeting {
+  font-size: 11px; color: var(--teal-bright);
+  font-family: 'DM Mono', monospace; letter-spacing: 0.08em;
+  margin-bottom: 2px;
+}
+.hdr-name {
+  font-family: 'Instrument Serif', serif;
+  font-size: 28px; color: var(--white); line-height: 1.05;
+}
+.hdr-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal-dark), var(--teal-bright));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: var(--white);
+  border: 1.5px solid rgba(45,212,191,0.3);
+}
+
+/* ── GEM SECTION ── */
+.gem-section {
+  padding: 4px 0 12px;
+  display: flex; flex-direction: column; align-items: center;
+  position: relative;
+}
+
+.gem-glow {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(45,212,191,0.1) 0%, transparent 70%);
+  animation: breathe 3s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes breathe {
+  0%   { transform: translate(-50%,-50%) scale(0.88); opacity: 0.5; }
+  100% { transform: translate(-50%,-50%) scale(1.12); opacity: 1; }
+}
+
+.gem-ring {
+  position: absolute; top: 50%; left: 50%;
+  border-radius: 50%;
+  border: 1px solid rgba(45,212,191,0.06);
+  animation: ring-out 5s ease-out infinite;
+  pointer-events: none;
+}
+.gem-ring:nth-of-type(2) { width: 200px; height: 200px; animation-delay: 0s; }
+.gem-ring:nth-of-type(3) { width: 240px; height: 240px; animation-delay: 1.8s; }
+.gem-ring:nth-of-type(4) { width: 280px; height: 280px; animation-delay: 3.6s; }
+@keyframes ring-out {
+  0%   { transform: translate(-50%,-50%) scale(0.88); opacity: 0.6; }
+  100% { transform: translate(-50%,-50%) scale(1.12); opacity: 0; }
+}
+
+.gem-meta {
+  text-align: center; margin-top: 6px;
+}
+.gem-type {
+  font-family: 'Instrument Serif', serif;
+  font-size: 17px; color: var(--white); margin-bottom: 2px;
+}
+.gem-sub {
+  font-size: 10px; color: var(--slate);
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── DIM BARS ── */
+.dims {
+  padding: 10px 22px 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.dim-row { display: flex; align-items: center; gap: 8px; }
+.dim-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.dim-name { font-size: 9px; color: var(--slate); font-family: 'DM Mono', monospace; width: 60px; flex-shrink: 0; }
+.dim-track { flex: 1; height: 2px; background: rgba(255,255,255,0.05); border-radius: 1px; overflow: hidden; }
+.dim-fill { height: 100%; border-radius: 1px; }
+.dim-val { font-size: 9px; font-family: 'DM Mono', monospace; width: 22px; text-align: right; }
+
+/* ── INSIGHT STRIP ── */
+.insight-strip {
+  margin: 12px 18px 0;
+  background: rgba(45,212,191,0.04);
+  border: 1px solid rgba(45,212,191,0.1);
+  border-radius: 12px; padding: 10px 13px;
+  position: relative; overflow: hidden;
+}
+.insight-strip::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(45,212,191,0.4), transparent);
+}
+.is-label {
+  font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--teal-bright); font-family: 'DM Mono', monospace;
+  font-weight: 700; margin-bottom: 3px;
+}
+.is-text {
+  font-size: 11px; color: rgba(240,253,249,0.65);
+  font-family: 'DM Mono', monospace; line-height: 1.5;
+}
+
+/* ── SECTION HEADER ── */
+.sec {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 22px 9px;
+}
+.sec-title { font-size: 15px; font-weight: 700; color: var(--white); }
+.sec-link { font-size: 10px; color: var(--teal-bright); font-family: 'DM Mono', monospace; }
+
+/* ── ORACLE CARD ── */
+.oracle-card {
+  margin: 0 16px 4px;
+  background: var(--dark-card);
+  border: 1px solid var(--dark-border);
+  border-radius: 16px; overflow: hidden;
+  position: relative;
+}
+.oracle-card::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(45,212,191,0.3), transparent);
+}
+.oracle-hdr {
+  padding: 12px 14px 9px;
+  display: flex; align-items: flex-start; gap: 10px;
+  border-bottom: 1px solid var(--dark-border);
+}
+.oracle-emoji { font-size: 22px; flex-shrink: 0; }
+.oracle-name { font-size: 13px; font-weight: 700; color: var(--white); }
+.oracle-sub { font-size: 10px; color: var(--slate); font-family: 'DM Mono', monospace; margin-top: 1px; }
+.oracle-badge {
+  margin-left: auto; flex-shrink: 0;
+  background: rgba(45,212,191,0.1); color: var(--teal-bright);
+  font-size: 9px; font-weight: 700; font-family: 'DM Mono', monospace;
+  padding: 3px 8px; border-radius: 20px;
+}
+
+.oracle-items { padding: 10px 14px 13px; display: flex; flex-direction: column; gap: 9px; }
+.oracle-item { display: flex; align-items: flex-start; gap: 9px; }
+.o-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.o-dot.love { background: var(--teal-bright); box-shadow: 0 0 6px var(--teal-bright); }
+.o-dot.skip { background: var(--red); box-shadow: 0 0 6px var(--red); }
+.o-dish { font-size: 13px; font-weight: 600; color: var(--white); }
+.o-why { font-size: 10px; color: var(--slate); font-family: 'DM Mono', monospace; margin-top: 2px; line-height: 1.4; }
+
+/* ── VISIT LOG ── */
+.visit-scroll {
+  display: flex; gap: 10px;
+  padding: 0 20px 4px; overflow-x: auto;
+  scrollbar-width: none; margin-bottom: 4px;
+}
+.visit-scroll::-webkit-scrollbar { display: none; }
+
+.v-chip {
+  flex-shrink: 0; width: 148px;
+  background: var(--dark-card);
+  border: 1px solid var(--dark-border);
+  border-radius: 13px; padding: 11px 13px;
+}
+.v-name { font-size: 12px; font-weight: 700; color: var(--white); margin-bottom: 2px; }
+.v-dish { font-size: 9px; color: var(--teal-bright); font-family: 'DM Mono', monospace; margin-bottom: 5px; }
+.v-quote { font-size: 10px; color: var(--slate); font-style: italic; line-height: 1.3; font-family: 'DM Mono', monospace; }
+.v-date { font-size: 8px; color: #162820; font-family: 'DM Mono', monospace; margin-top: 7px; }
+
+/* ── WRAPPED TEASER ── */
+.wrapped {
+  margin: 4px 16px 0;
+  background: linear-gradient(135deg, #130A2E, #221060);
+  border: 1px solid rgba(167,139,250,0.2);
+  border-radius: 14px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 13px;
+}
+.w-emoji { font-size: 30px; flex-shrink: 0; }
+.w-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 15px; color: var(--white); margin-bottom: 2px;
+}
+.w-sub { font-size: 10px; color: rgba(167,139,250,0.7); font-family: 'DM Mono', monospace; }
+.w-cta {
+  margin-left: auto; flex-shrink: 0;
+  background: rgba(167,139,250,0.15); color: var(--purple);
+  border: 1px solid rgba(167,139,250,0.25);
+  font-size: 10px; font-weight: 700; font-family: 'Syne', sans-serif;
+  padding: 7px 12px; border-radius: 9px; cursor: pointer;
+}
+
+/* ── NEARBY SECTION ── */
+.nearby-scroll {
+  display: flex; gap: 10px;
+  padding: 0 20px 4px; overflow-x: auto;
+  scrollbar-width: none;
+}
+.nearby-scroll::-webkit-scrollbar { display: none; }
+
+.nearby-chip {
+  flex-shrink: 0; width: 160px;
+  background: var(--dark-card);
+  border: 1px solid var(--dark-border);
+  border-radius: 13px; overflow: hidden;
+}
+.nc-img {
+  height: 72px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+}
+.nc-body { padding: 9px 11px; }
+.nc-name { font-size: 12px; font-weight: 700; color: var(--white); margin-bottom: 2px; }
+.nc-match { font-size: 9px; color: var(--teal-bright); font-family: 'DM Mono', monospace; margin-bottom: 5px; }
+.nc-top { font-size: 10px; color: var(--slate); font-family: 'DM Mono', monospace; line-height: 1.3; }
+
+/* ── BOTTOM NAV ── */
+.nav {
+  position: sticky; bottom: 0;
+  background: rgba(5,10,8,0.96);
+  border-top: 1px solid var(--dark-border);
+  display: flex; justify-content: space-around;
+  padding: 10px 0 28px;
+  backdrop-filter: blur(12px);
+}
+.nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; opacity: 0.22; }
+.nav-item.active { opacity: 1; }
+.nav-icon { font-size: 18px; }
+.nav-lbl { font-size: 9px; color: var(--white); letter-spacing: 0.06em; }
+.nav-item.active .nav-lbl { color: var(--teal-bright); }
+</style>
+</head>
+<body>
+
+<div class="page-lbl">insa · consumer · home screen</div>
+
+<div class="phone">
+  <div class="notch"></div>
+  <div class="screen">
+
+    <!-- STATUS -->
+    <div class="status">
+      <span class="s-time">9:41</span>
+      <span class="s-icons">●●● WiFi 🔋</span>
+    </div>
+
+    <!-- HEADER -->
+    <div class="hdr">
+      <div class="hdr-left">
+        <div class="hdr-greeting">friday evening</div>
+        <div class="hdr-name">james.</div>
+      </div>
+      <div class="hdr-avatar">J</div>
+    </div>
+
+    <!-- GEM -->
+    <div class="gem-section">
+      <div class="gem-glow"></div>
+      <div class="gem-ring"></div>
+      <div class="gem-ring"></div>
+      <div class="gem-ring"></div>
+      <canvas id="gem" width="200" height="200" style="position:relative;z-index:2"></canvas>
+      <div class="gem-meta">
+        <div class="gem-type">texture-forward · umami seeker</div>
+        <div class="gem-sub">signal strength 94% · 6 of 6 facets lit</div>
+      </div>
+    </div>
+
+    <!-- DIM BARS -->
+    <div class="dims">
+      <div class="dim-row">
+        <div class="dim-dot" style="background:#2DD4BF;box-shadow:0 0 5px #2DD4BF"></div>
+        <div class="dim-name">texture</div>
+        <div class="dim-track"><div class="dim-fill" style="width:88%;background:#2DD4BF"></div></div>
+        <div class="dim-val" style="color:#2DD4BF">88</div>
+      </div>
+      <div class="dim-row">
+        <div class="dim-dot" style="background:#34D399;box-shadow:0 0 5px #34D399"></div>
+        <div class="dim-name">umami</div>
+        <div class="dim-track"><div class="dim-fill" style="width:76%;background:#34D399"></div></div>
+        <div class="dim-val" style="color:#34D399">76</div>
+      </div>
+      <div class="dim-row">
+        <div class="dim-dot" style="background:#FCD34D;box-shadow:0 0 5px #FCD34D"></div>
+        <div class="dim-name">intensity</div>
+        <div class="dim-track"><div class="dim-fill" style="width:62%;background:#FCD34D"></div></div>
+        <div class="dim-val" style="color:#FCD34D">62</div>
+      </div>
+      <div class="dim-row">
+        <div class="dim-dot" style="background:#A78BFA;box-shadow:0 0 5px #A78BFA"></div>
+        <div class="dim-name">adventure</div>
+        <div class="dim-track"><div class="dim-fill" style="width:71%;background:#A78BFA"></div></div>
+        <div class="dim-val" style="color:#A78BFA">71</div>
+      </div>
+      <div class="dim-row">
+        <div class="dim-dot" style="background:#F87171;box-shadow:0 0 5px #F87171"></div>
+        <div class="dim-name">weight</div>
+        <div class="dim-track"><div class="dim-fill" style="width:55%;background:#F87171"></div></div>
+        <div class="dim-val" style="color:#F87171">55</div>
+      </div>
+      <div class="dim-row">
+        <div class="dim-dot" style="background:#60A5FA;box-shadow:0 0 5px #60A5FA"></div>
+        <div class="dim-name">aroma</div>
+        <div class="dim-track"><div class="dim-fill" style="width:83%;background:#60A5FA"></div></div>
+        <div class="dim-val" style="color:#60A5FA">83</div>
+      </div>
+    </div>
+
+    <!-- INSIGHT STRIP -->
+    <div class="insight-strip">
+      <div class="is-label">this week's insight</div>
+      <div class="is-text">you mention mouthfeel 3× more than average. you've never complained about heat — only when spice overwhelms texture. top 12% of texture-sensitive eaters on insa.</div>
+    </div>
+
+    <!-- MENU ORACLE -->
+    <div class="sec">
+      <div class="sec-title">menu oracle ✦</div>
+      <div class="sec-link">tonight near you →</div>
+    </div>
+
+    <div class="oracle-card">
+      <div class="oracle-hdr">
+        <div class="oracle-emoji">🍜</div>
+        <div>
+          <div class="oracle-name">Avor Thai</div>
+          <div class="oracle-sub">silver lake · open now · 0.3mi</div>
+        </div>
+        <div class="oracle-badge">94% match</div>
+      </div>
+      <div class="oracle-items">
+        <div class="oracle-item">
+          <div class="o-dot love"></div>
+          <div>
+            <div class="o-dish">Crispy Basil Chicken</div>
+            <div class="o-why">high texture contrast · bold umami finish · your signal at 94%</div>
+          </div>
+        </div>
+        <div class="oracle-item">
+          <div class="o-dot love"></div>
+          <div>
+            <div class="o-dish">Pad See Ew</div>
+            <div class="o-why">wide noodle chew · your most-mentioned texture type across 14 visits</div>
+          </div>
+        </div>
+        <div class="oracle-item">
+          <div class="o-dot skip"></div>
+          <div>
+            <div class="o-dish">Green Curry</div>
+            <div class="o-why">thin sauce · spice overwhelms texture for your profile · skip</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEARBY -->
+    <div class="sec">
+      <div class="sec-title">nearby matches</div>
+      <div class="sec-link">see all →</div>
+    </div>
+
+    <div class="nearby-scroll">
+      <div class="nearby-chip">
+        <div class="nc-img" style="background:linear-gradient(135deg,#0C3028,#0F766E)">🍱</div>
+        <div class="nc-body">
+          <div class="nc-name">Marugame</div>
+          <div class="nc-match">87% match</div>
+          <div class="nc-top">order: beef udon · thick noodle chew matches your texture signal</div>
+        </div>
+      </div>
+      <div class="nearby-chip">
+        <div class="nc-img" style="background:linear-gradient(135deg,#1A0A2E,#3B1080)">🍣</div>
+        <div class="nc-body">
+          <div class="nc-name">Kura Sushi</div>
+          <div class="nc-match">81% match</div>
+          <div class="nc-top">order: wagyu nigiri · rich umami, firm texture — your profile at 88%</div>
+        </div>
+      </div>
+      <div class="nearby-chip">
+        <div class="nc-img" style="background:linear-gradient(135deg,#1A1A08,#4A3A00)">🍜</div>
+        <div class="nc-body">
+          <div class="nc-name">Tatsu Ramen</div>
+          <div class="nc-match">78% match</div>
+          <div class="nc-top">order: original ramen · rich tonkotsu, high body — weight score 82%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISIT LOG -->
+    <div class="sec">
+      <div class="sec-title">your visits</div>
+      <div class="sec-link">14 places →</div>
+    </div>
+
+    <div class="visit-scroll">
+      <div class="v-chip">
+        <div class="v-name">Avor Thai</div>
+        <div class="v-dish">Pad See Ew · Crispy Basil</div>
+        <div class="v-quote">"the char on the noodles was perfect this time"</div>
+        <div class="v-date">3 days ago</div>
+      </div>
+      <div class="v-chip">
+        <div class="v-name">Marugame</div>
+        <div class="v-dish">Beef Udon</div>
+        <div class="v-quote">"broth was clean, noodles had great chew"</div>
+        <div class="v-date">1 week ago</div>
+      </div>
+      <div class="v-chip">
+        <div class="v-name">Nobu LA</div>
+        <div class="v-dish">Black Cod Miso</div>
+        <div class="v-quote">"texture was exceptional — miso glaze perfect"</div>
+        <div class="v-date">2 weeks ago</div>
+      </div>
+      <div class="v-chip">
+        <div class="v-name">Tatsu Ramen</div>
+        <div class="v-dish">Original Ramen</div>
+        <div class="v-quote">"broth rich but not heavy — exactly right"</div>
+        <div class="v-date">3 weeks ago</div>
+      </div>
+    </div>
+
+    <!-- WRAPPED -->
+    <div class="wrapped" style="margin-top:16px">
+      <div class="w-emoji">✨</div>
+      <div>
+        <div class="w-title">taste wrapped</div>
+        <div class="w-sub">14 restaurants · 47 dishes · your year in food</div>
+      </div>
+      <div class="w-cta">view →</div>
+    </div>
+
+    <!-- SPACER -->
+    <div style="height:20px"></div>
+
+    <!-- BOTTOM NAV -->
+    <div class="nav">
+      <div class="nav-item active">
+        <div class="nav-icon">◈</div>
+        <div class="nav-lbl">home</div>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">🔮</div>
+        <div class="nav-lbl">oracle</div>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">🗺</div>
+        <div class="nav-lbl">log</div>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">◯</div>
+        <div class="nav-lbl">you</div>
+      </div>
+    </div>
+
+  </div><!-- screen -->
+</div><!-- phone -->
+
+<script>
+// ── DODECAHEDRON GEM ─────────────────────────────────────────────────────────
+const PHI = (1 + Math.sqrt(5)) / 2;
+
+const rawVerts = [
+  [ 1, 1, 1], [ 1, 1,-1], [ 1,-1, 1], [ 1,-1,-1],
+  [-1, 1, 1], [-1, 1,-1], [-1,-1, 1], [-1,-1,-1],
+  [0, 1/PHI, PHI], [0, 1/PHI,-PHI], [0,-1/PHI, PHI], [0,-1/PHI,-PHI],
+  [1/PHI, PHI, 0], [1/PHI,-PHI, 0], [-1/PHI, PHI, 0], [-1/PHI,-PHI, 0],
+  [PHI, 0, 1/PHI], [PHI, 0,-1/PHI], [-PHI, 0, 1/PHI], [-PHI, 0,-1/PHI],
+];
+
+const verts = rawVerts.map(v => {
+  const len = Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
+  return [v[0]/len, v[1]/len, v[2]/len];
+});
+
+const faces = [
+  [0,8,10,2,16],  [0,16,17,1,12], [0,12,14,4,8],
+  [1,17,3,11,9],  [1,9,5,14,12],  [2,10,6,15,13],
+  [2,13,3,17,16], [3,13,15,7,11], [4,14,5,19,18],
+  [4,18,6,10,8],  [5,9,11,7,19],  [6,18,19,7,15],
+];
+
+// Precomputed antipodal face pairs → 6 dimensions
+const DIMS = [
+  { color: '#2DD4BF', value: 0.88, faces: [0,10]  }, // texture
+  { color: '#34D399', value: 0.76, faces: [1,11]  }, // umami
+  { color: '#FCD34D', value: 0.62, faces: [2,7]   }, // intensity
+  { color: '#A78BFA', value: 0.71, faces: [3,9]   }, // adventure
+  { color: '#F87171', value: 0.55, faces: [4,5]   }, // weight
+  { color: '#60A5FA', value: 0.83, faces: [6,8]   }, // aroma
+];
+
+const faceColor = new Array(12).fill(null);
+DIMS.forEach(dim => {
+  dim.faces.forEach(fi => faceColor[fi] = dim);
+});
+
+function rotY(v, a) {
+  const [x,y,z] = v;
+  return [x*Math.cos(a)+z*Math.sin(a), y, -x*Math.sin(a)+z*Math.cos(a)];
+}
+function rotX(v, a) {
+  const [x,y,z] = v;
+  return [x, y*Math.cos(a)-z*Math.sin(a), y*Math.sin(a)+z*Math.cos(a)];
+}
+function project(v, scale, cx, cy) {
+  const fov = 3.5;
+  const s = fov / (fov - v[2]);
+  return [cx + v[0]*scale*s, cy - v[1]*scale*s];
+}
+
+let angleY = 0;
+const AX = 0.3;
+
+function drawGem() {
+  const canvas = document.getElementById('gem');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W/2, cy = H/2;
+  const scale = W * 0.33;
+
+  ctx.clearRect(0,0,W,H);
+
+  const rotated = verts.map(v => rotX(rotY(v, angleY), AX));
+
+  // Sort faces back→front
+  const sorted = [...Array(12).keys()].sort((a,b) => {
+    const za = faces[a].reduce((s,i) => s+rotated[i][2], 0);
+    const zb = faces[b].reduce((s,i) => s+rotated[i][2], 0);
+    return za - zb;
+  });
+
+  sorted.forEach(fi => {
+    const dim = faceColor[fi];
+    const pts = faces[fi].map(vi => project(rotated[vi], scale, cx, cy));
+    const cz = faces[fi].reduce((s,i) => s+rotated[i][2], 0) / 5;
+    const v = dim ? dim.value : 0;
+
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let i=1; i<pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+    ctx.closePath();
+
+    if (v > 0.02) {
+      const alpha = Math.round((0.06 + v * 0.18) * 255).toString(16).padStart(2,'0');
+      ctx.fillStyle = dim.color + alpha;
+      ctx.fill();
+
+      ctx.save();
+      ctx.shadowBlur = 8 + v*14;
+      ctx.shadowColor = dim.color;
+      ctx.strokeStyle = dim.color + Math.round((0.3 + v*0.5)*255).toString(16).padStart(2,'0');
+      ctx.lineWidth = 0.7 + v*0.9;
+      ctx.stroke();
+      ctx.restore();
+    } else {
+      ctx.fillStyle = 'rgba(255,255,255,0.01)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+      ctx.lineWidth = 0.4;
+      ctx.stroke();
+    }
+  });
+
+  // Center glow
+  const cg = ctx.createRadialGradient(cx,cy,0,cx,cy,28);
+  cg.addColorStop(0,'rgba(45,212,191,0.22)');
+  cg.addColorStop(1,'rgba(45,212,191,0)');
+  ctx.fillStyle = cg;
+  ctx.beginPath();
+  ctx.arc(cx,cy,28,0,Math.PI*2);
+  ctx.fill();
+
+  angleY += 0.007;
+  requestAnimationFrame(drawGem);
+}
+
+drawGem();
+</script>
+</body>
+</html>
